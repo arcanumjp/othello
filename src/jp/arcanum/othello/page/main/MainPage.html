@@ -1,0 +1,838 @@
+<html>
+	<head>
+		<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>成長する○×ゲーム</title>
+		<link rel="stylesheet" href="./default.css" type="text/css">
+	</head>
+
+	<body>
+
+
+
+		<wicket:head>
+			<style>
+				.stoneimg{
+					padding:0px;
+					margin:0px;
+					border-style:none;
+				}
+				.cell{
+					border-style: solid;
+					border-width:1px;
+					border-color:black;
+					/*
+					margin:1 1 1 1;
+					padding:1 1 1 1;
+					*/
+				}
+				.cellMouseOver{
+					border-style: solid;
+					border-width:1px;
+					border-color:red;
+					/*
+					margin:1 1 1 1;
+					padding:1 1 1 1;
+					*/
+				}
+
+				.board_table{
+					background-image: url(board.gif);
+					background-color:transparent;
+					overflow:auto;
+					/*
+					border-spacing:10px;
+					*/
+
+					border-top-color:silver;
+					border-right-color:black;
+					border-bottom-color:black;
+					border-left-color:silver;
+					border-top-style:solid;
+					border-right-style:solid;
+					border-bottom-style:solid;
+					border-left-style:solid;
+					border-top-width:2px;
+					border-right-width:2px;
+					border-bottom-width:2px;
+					border-left-width:2px;
+
+				}
+
+				.content{
+					/* float:left; */
+					position:absolute;
+					/* border-style:solid; */
+					/* border-width:1px; */
+					/* border-color:black; */
+					/* padding:4px; */
+					margin:0px;
+
+
+				}
+
+				.info{
+					text-align:left;
+					/* float:right;*/
+					margin-left:432px;
+					/* position:relative; */
+					padding:10px;
+					border-style:groove;
+					border-width:2;
+				}
+
+
+				.board_tr{
+					background-color:transparent;
+					padding:1 1 1 1;
+					margin:1 1 1 1;
+				}
+
+				.board_td{
+					/* padding:1 1 1 1;
+					margin:1 1 1 1;*/
+
+					background-color:transparent;
+					border-style:solid;
+					border-width:1px;
+					border-color:black silver silver black;
+				}
+
+				.rate_td{
+					background-color:transparent;
+					border-style:solid;
+					border-width:1px;
+					border-color:black silver silver black;
+					font-size:8px;
+				}
+
+			</style>
+			<script>
+
+				function resizeWindow(scr){
+					scr.style.width  = getBrowserWidth();
+					scr.style.height = getBrowserHeight();
+				}
+
+				function disableAll(){
+
+					var scr = drawScreen('white');
+					document.body.style.cursol="wait";
+					scr.style.filter="alpha(opacity=0);";
+					scr.innterHTML="";
+					return true;
+					document.body.onresize=resizeWindow(scr);
+
+				}
+
+				function youLoose(){
+					var scr = drawScreen('black');
+					scr.innerHTML = "<br>You Loose!!<br>";
+					scr.style.fontSize="150px";
+					var close = document.createElement("button");
+					close.innerHTML = "閉じる";
+					close.style.fontSize="60px";
+					close.onclick = function(){
+						scr.style.display="none";
+						location.href="";	// app root
+					};
+					scr.appendChild(close);
+					document.body.onresize=function(){
+						scr.style.width  = getBrowserWidth();
+						scr.style.height = getBrowserHeight();
+					};
+
+				}
+				function youWin(){
+
+					var scr = drawScreen('yellow');
+					var waitstr = document.createElement("DIV");
+
+					waitstr.innerHTML = "<br>You Win!<br>";
+					waitstr.style.fontSize="150px";
+					waitstr.style.filter="";
+					waitstr.style.MozOpacity = "";
+    				waitstr.style.opacity = "";
+					scr.appendChild(waitstr);
+
+					var close = document.createElement("button");
+					close.innerHTML = "閉じる";
+					close.style.fontSize="60px";
+					close.onclick = function(){
+						scr.style.display="none";
+						location.href="";	// app root
+					};
+					scr.appendChild(close);
+					document.body.onresize=function(){
+						scr.style.width  = getBrowserWidth();
+						scr.style.height = getBrowserHeight();
+					};
+
+				}
+				function com1Win(){
+
+					var scr = drawScreen('yellow');
+					scr.innerHTML = "<br>COM1 Win!<br>";
+					scr.style.fontSize="150px";
+					var close = document.createElement("button");
+					close.innerHTML = "閉じる";
+					close.style.fontSize="60px";
+					close.onclick = function(){
+						scr.style.display="none";
+						location.href="";	// app root
+					};
+					scr.appendChild(close);
+					document.body.onresize=function(){
+						scr.style.width  = getBrowserWidth();
+						scr.style.height = getBrowserHeight();
+					};
+
+				}
+				function drawGame(){
+					var scr = drawScreen('blue');
+					scr.innerHTML = "<br>-- Draw --<br>";
+					scr.style.fontSize="150px";
+					var close = document.createElement("button");
+					close.innerHTML = "閉じる";
+					close.style.fontSize="60px";
+					close.onclick = function(){
+						scr.style.display="none";
+						location.href="";	// app root
+					};
+					scr.appendChild(close);
+					document.body.onresize=function(){
+						scr.style.width  = getBrowserWidth();
+						scr.style.height = getBrowserHeight();
+					};
+
+				}
+
+				function drawScreen(bgcolor){
+					// ここで半透明のスクリーンを描画
+					var scr = document.createElement("DIV");
+
+					document.body.style.cursol="wait";
+					scr.id = "scr";
+					scr.name = "scr";
+					scr.style.borderStyle="solid";
+					scr.style.borderWidth="1px";
+					scr.style.position = "absolute";
+					scr.style.textValign="middle";
+					scr.style.textAlign="center";
+					scr.style.top = "0";
+					scr.style.left = "0";
+					scr.style.width  = getBrowserWidth();
+					scr.style.height = getBrowserHeight();
+					scr.style.backgroundColor=bgcolor;
+					scr.style.filter="Alpha(opacity=50)";
+					scr.style.MozOpacity = "0.50";
+    				scr.style.opacity = "0.50";
+					document.body.appendChild(scr);
+
+					return scr;
+				}
+
+
+				function callHumanPass(){
+
+					alert("打てる手がありません。パスします。");
+
+					// パスする
+					setTimeout("submitHumanPassBtn()",200);
+				}
+
+				function submitHumanPassBtn(){
+					var btn = document.getElementsByName("humanpass")[0];
+					btn.click()
+				}
+
+				function callComTurn(pass){
+
+					var scr = drawScreen('white');
+					var waitstr = document.createElement("DIV");
+					waitstr.innerHTML = "<br><br><br><br><br><br><h2>コンピュータ、考え中...</h2>";
+					waitstr.style.filter="";
+					waitstr.style.MozOpacity = "";
+    				waitstr.style.opacity = "";
+					scr.appendChild(waitstr);
+
+					if(pass==true){
+						alert("コンピュータは、打てる手がありません。パスします。");
+					}
+
+					// コンピュータの手を考える
+					setTimeout("submitComTurnBtn()",200);
+
+				}
+
+				function submitComTurnBtn(){
+					var btn = document.getElementsByName("comturn")[0];
+					btn.click()
+				}
+
+				function getBrowserWidth() {
+				    if ( window.innerWidth ) {
+				        return window.innerWidth;
+				    }
+				    else if ( document.documentElement && document.documentElement.clientWidth != 0 ) {
+				        return document.documentElement.clientWidth;
+				    }
+				    else if ( document.body ) {
+				        return document.body.clientWidth;
+				    }
+				    return 0;
+				}
+				function getBrowserHeight() {
+				    if ( window.innerHeight ) {
+				        return window.innerHeight;
+				    }
+				    else if ( document.documentElement && document.documentElement.clientHeight != 0 ) {
+				        return document.documentElement.clientHeight;
+				    }
+				    else if ( document.body ) {
+				        return document.body.clientHeight;
+				    }
+				    return 0;
+				}
+
+
+			</script>
+
+		</wicket:head>
+
+
+		<wicket:extend>
+
+
+			<!-- ■　■　■　 左側のメインボード ■ ■ ■ -->
+			<div class="content">
+
+				<table class="board_table" summary="">
+
+					<!-- １段目　■　■　■　■　■　■　■　■　■　■　■　■　■　 -->
+					<tr class="board_tr">
+						<td class="board_td">
+							<a wicket:id="cell1" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage1" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell2" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage2" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell3" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage3" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell4" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage4" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell5" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage5" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell6" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage6" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell7" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage7" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell8" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage8" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+					</tr>
+
+
+
+					<!-- ２段目　■　■　■　■　■　■　■　■　■　■　■　■　■　 -->
+					<tr class="board_tr">
+						<td class="board_td">
+							<a wicket:id="cell9" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage9" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell10" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage10" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell11" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage11" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell12" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage12" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell13" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage13" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell14" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage14" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell15" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage15" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell16" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage16" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+					</tr>
+
+
+
+					<!-- ３段目　■　■　■　■　■　■　■　■　■　■　■　■　■　 -->
+					<tr class="board_tr">
+						<td class="board_td">
+							<a wicket:id="cell17" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage17" src="maru.jpg" class="stoneimg" alt=""/>
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell18" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage18" src="maru.jpg" class="stoneimg" alt=""/>
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell19" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage19" src="maru.jpg" class="stoneimg" alt=""/>
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell20" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage20" src="maru.jpg" class="stoneimg" alt=""/>
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell21" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage21" src="maru.jpg" class="stoneimg" alt=""/>
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell22" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage22" src="maru.jpg" class="stoneimg" alt=""/>
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell23" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage23" src="maru.jpg" class="stoneimg" alt=""/>
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell24" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage24" src="maru.jpg" class="stoneimg" alt=""/>
+							</a>
+						</td>
+					</tr>
+
+
+
+					<!-- ４段目　■　■　■　■　■　■　■　■　■　■　■　■　■　 -->
+					<tr class="board_tr">
+						<td class="board_td">
+							<a wicket:id="cell25" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage25" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell26" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage26" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell27" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage27" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell28" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage28" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell29" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage29" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell30" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage30" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell31" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage31" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell32" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage32" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+					</tr>
+
+
+
+					<!-- ５段目　■　■　■　■　■　■　■　■　■　■　■　■　■　 -->
+					<tr class="board_tr">
+						<td class="board_td">
+							<a wicket:id="cell33" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage33" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell34" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage34" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell35" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage35" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell36" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage36" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell37" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage37" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell38" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage38" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell39" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage39" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell40" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage40" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+					</tr>
+
+
+
+					<!-- ６段目　■　■　■　■　■　■　■　■　■　■　■　■　■　 -->
+					<tr class="board_tr">
+						<td class="board_td">
+							<a wicket:id="cell41" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage41" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell42" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage42" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell43" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage43" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell44" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage44" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell45" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage45" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell46" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage46" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell47" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage47" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell48" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage48" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+					</tr>
+
+
+
+					<!-- ７段目　■　■　■　■　■　■　■　■　■　■　■　■　■　 -->
+					<tr class="board_tr">
+						<td class="board_td">
+							<a wicket:id="cell49" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage49" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell50" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage50" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell51" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage51" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell52" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage52" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell53" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage53" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell54" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage54" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell55" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage55" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell56" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage56" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+					</tr>
+
+
+
+					<!-- ８段目　■　■　■　■　■　■　■　■　■　■　■　■　■　 -->
+					<tr class="board_tr">
+						<td class="board_td">
+							<a wicket:id="cell57" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage57" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell58" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage58" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell59" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage59" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell60" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage60" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell61" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage61" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell62" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage62" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell63" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage63" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+						<td class="board_td">
+							<a wicket:id="cell64" class="cell" onMouseover="this.className='cellMouseOver'" onMouseout="this.className='cell'">
+								<img wicket:id="cellimage64" src="maru.jpg" class="stoneimg" alt="" />
+							</a>
+						</td>
+					</tr>
+
+				</table>
+
+			</div>
+
+			<!-- ■　■　■　 右側の情報ボード ■ ■ ■ -->
+			<div class="info">
+
+				<table summary="">
+					<tr>
+						<th colspan="4" >ターン情報</th>
+						<th             >取得数</th>
+					</tr>
+
+					<!-- プレーヤ１ -->
+					<tr>
+						<td style="font-size:20px;"><span wicket:id="isturn1">★</span></td>
+						<td style="font-size:20px;">プレイヤー１</td>
+						<td style="font-size:20px;"              ><img  wicket:id="stone1" src="*" /></td>
+						<td style="font-size:20px;"              ><span wicket:id="humanorcom1">人間</span></td>
+						<td style="font-size:20px;" align="right"><span wicket:id="playercount1">9999</span></td>
+					</tr>
+
+					<!-- プレーヤ２ -->
+					<tr>
+						<td style="font-size:20px;"              ><span wicket:id="isturn2">★</span></td>
+						<td style="font-size:20px;"              >プレイヤー２</td>
+						<td style="font-size:20px;"              ><img wicket:id="stone2" src="*" /></td>
+						<td style="font-size:20px;"              ><span wicket:id="humanorcom2">人間</span></td>
+						<td style="font-size:20px;" align="right"><span wicket:id="playercount2">9999</span></td>
+					</tr>
+
+				</table>
+
+				<br>
+
+				<table summary="">
+					<tr>
+						<th colspan="9">以前打ったことがある手の情報</th>
+					</tr>
+					<tr>
+						<th>#</th>
+						<th>[--1--]</th>
+						<th>[--2--]</th>
+						<th>[--3--]</th>
+						<th>[--4--]</th>
+						<th>[--5--]</th>
+						<th>[--6--]</th>
+						<th>[--7--]</th>
+						<th>[--8--]</th>
+					</tr>
+					<tr>
+						<th>[--1--]</th>
+						<td><span wicket:id="rate1">1?</span></td>
+						<td><span wicket:id="rate2">2</span></td>
+						<td><span wicket:id="rate3">3</span></td>
+						<td><span wicket:id="rate4">4</span></td>
+						<td><span wicket:id="rate5">5</span></td>
+						<td><span wicket:id="rate6">6</span></td>
+						<td><span wicket:id="rate7">7</span></td>
+						<td><span wicket:id="rate8">8</span></td>
+					</tr>
+					<tr>
+						<th>[--2--]</th>
+						<td><span wicket:id="rate9">9</span></td>
+						<td><span wicket:id="rate10">10</span></td>
+						<td><span wicket:id="rate11">11</span></td>
+						<td><span wicket:id="rate12">12</span></td>
+						<td><span wicket:id="rate13">13</span></td>
+						<td><span wicket:id="rate14">14</span></td>
+						<td><span wicket:id="rate15">15</span></td>
+						<td><span wicket:id="rate16">16</span></td>
+					</tr>
+					<tr>
+						<th>[--3--]</th>
+						<td><span wicket:id="rate17">17</span></td>
+						<td><span wicket:id="rate18">18</span></td>
+						<td><span wicket:id="rate19">19</span></td>
+						<td><span wicket:id="rate20">20</span></td>
+						<td><span wicket:id="rate21">21</span></td>
+						<td><span wicket:id="rate22">22</span></td>
+						<td><span wicket:id="rate23">23</span></td>
+						<td><span wicket:id="rate24">24</span></td>
+					</tr>
+					<tr>
+						<th>[--4--]</th>
+						<td><span wicket:id="rate25">25</span></td>
+						<td><span wicket:id="rate26">26</span></td>
+						<td><span wicket:id="rate27">27</span></td>
+						<td><span wicket:id="rate28">28</span></td>
+						<td><span wicket:id="rate29">29</span></td>
+						<td><span wicket:id="rate30">30</span></td>
+						<td><span wicket:id="rate31">31</span></td>
+						<td><span wicket:id="rate32">32</span></td>
+					</tr>
+					<tr>
+						<th>[--5--]</th>
+						<td><span wicket:id="rate33">33</span></td>
+						<td><span wicket:id="rate34">34</span></td>
+						<td><span wicket:id="rate35">35</span></td>
+						<td><span wicket:id="rate36">36</span></td>
+						<td><span wicket:id="rate37">37</span></td>
+						<td><span wicket:id="rate38">38</span></td>
+						<td><span wicket:id="rate39">39</span></td>
+						<td><span wicket:id="rate40">40</span></td>
+					</tr>
+					<tr>
+						<th>[--6--]</th>
+						<td><span wicket:id="rate41">41</span></td>
+						<td><span wicket:id="rate42">42</span></td>
+						<td><span wicket:id="rate43">43</span></td>
+						<td><span wicket:id="rate44">44</span></td>
+						<td><span wicket:id="rate45">45</span></td>
+						<td><span wicket:id="rate46">46</span></td>
+						<td><span wicket:id="rate47">47</span></td>
+						<td><span wicket:id="rate48">48</span></td>
+					</tr>
+					<tr>
+						<th>[--7--]</th>
+						<td><span wicket:id="rate49">49</span></td>
+						<td><span wicket:id="rate50">50</span></td>
+						<td><span wicket:id="rate51">51</span></td>
+						<td><span wicket:id="rate52">52</span></td>
+						<td><span wicket:id="rate53">53</span></td>
+						<td><span wicket:id="rate54">54</span></td>
+						<td><span wicket:id="rate55">55</span></td>
+						<td><span wicket:id="rate56">56</span></td>
+					</tr>
+					<tr>
+						<th>[--8--]</th>
+						<td><span wicket:id="rate57">57</span></td>
+						<td><span wicket:id="rate58">58</span></td>
+						<td><span wicket:id="rate59">59</span></td>
+						<td><span wicket:id="rate60">60</span></td>
+						<td><span wicket:id="rate61">61</span></td>
+						<td><span wicket:id="rate62">62</span></td>
+						<td><span wicket:id="rate63">63</span></td>
+						<td><span wicket:id="rate64">64</span></td>
+					</tr>
+				</table>
+
+
+
+			</div>
+			<br />
+			<br />
+			<br />
+			<br />
+
+
+
+
+			<!-- コンピュータ用の非表示ボタン -->
+			<input type="submit" wicket:id="comturn" value="comturn" style="display:none;" />
+
+			<!-- パス用の非表示ボタン -->
+			<input type="submit" wicket:id="humanpass" value="humanpass" style="display:none;" />
+
+		</wicket:extend>
+	</body>
+
+</html>
+

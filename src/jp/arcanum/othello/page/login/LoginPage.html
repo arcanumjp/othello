@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>成長する○×ゲーム</title>
+		<link rel="stylesheet" href="./default.css" type="text/css">
+	</head>
+
+	<body>
+
+		<wicket:extend>
+			<br>
+			<table>
+				<tr>
+					<th>OpenID Name</th>
+					<td><input type="text" wicket:id="openidname"></td>
+				</tr>
+				<tr>
+					<th>OpenID コンシューマー</th>
+					<td>
+						<select wicket:id="consumer">
+							<option value="1">はてな</option>
+							<option value="2">Yahoo!</option>
+							<option value="3">Mixi</option>
+						</select>
+					</td>
+				</tr>
+			</table>
+			<br>
+			<input type="submit" value="ログイン" wicket:id="loginbtn"/>
+
+		</wicket:extend>
+
+	</body>
+
+</html>
+

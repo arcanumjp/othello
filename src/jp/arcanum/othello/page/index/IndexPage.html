@@ -1,0 +1,103 @@
+<html>
+	<head>
+		<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>成長す</title>
+		<link rel="stylesheet" href="./default.css" type="text/css">
+	</head>
+
+	<body>
+
+		<wicket:head>
+			<style>
+				.countinfo{
+					float:right;
+					padding:3 3 3 3;
+					text-align:right;
+					font-size:20px;
+					font-weight:bold;
+					background-color:white;
+					border-style:solid;
+					border-color:gray;
+					border-width:1;
+				}
+
+			</style>
+		</wicket:head>
+
+
+		<wicket:extend>
+
+			<div class="countinfo">
+				ただいま、<span wicket:id="countallgames">99,999</span>戦
+				（内、コンピュータ勝利数、<span wicket:id="comwincount">99</span>）
+			</div>
+
+			<h3>このサイトは何？</h3>
+
+			<p>
+
+　単なるオセロではなく、段々、プレイ数をこなすと強くなっていくオセロです。思考ルーチンとしては非常に簡単で、次を基本としています。
+
+
+<ol>
+	<li>いままでプレイした経験から、勝てる手を真似る。</li>
+	<li>もし、いままの経験が勝てる手が無い、または今まで経験したことが無い手順の場合は、ランダムに打てるところに打ちます。</li>
+	<li>オセロの定石集は、今は対応していません。</li>
+</ol>
+
+			</p>
+
+
+			<h3>何ができるのか？</h3>
+
+			<p>
+
+<ol>
+	<li>現在の成長しているコンピュータと対戦できます。</li>
+	<li>対戦したデータを保存して、コンピュータはちょっとだけ強くなった気になります。</li>
+</ol>
+
+			</p>
+
+
+			<div class="topmenu">
+
+				<table style="width:350;border-style:none;">
+					<tr style="background-color:transparent;">
+						<td style="border-style:none;">
+							プレイヤー１
+						</td>
+						<td style="border-style:none;">
+							<select wicket:id="selectplayer1">
+								<option>あなた</option>
+								<option>コンピュータ</option>
+							</select>
+						</td>
+						<td rowspan="4" style="vertical-align:top;border-style:none;" >
+							<input type="submit" wicket:id="start" class="menulink" value="ゲームを開始する"/>
+
+							<input type="submit" wicket:id="makemanyturn" class="menulink" value="ランダム＊１００"/>
+
+						</td>
+					</tr>
+					<tr style="background-color:transparent;">
+						<td style="border-style:none;">
+							プレイヤー２
+						</td>
+						<td style="border-style:none;">
+							<select wicket:id="selectplayer2">
+								<option>あなた</option>
+								<option>コンピュータ</option>
+							</select>
+						</td>
+					</tr>
+				</table>
+
+			</div>
+
+		</wicket:extend>
+
+	</body>
+
+</html>
+

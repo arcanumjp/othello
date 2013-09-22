@@ -1,0 +1,60 @@
+<html>
+	<head>
+		<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>経歴管理</title>
+		<link rel="stylesheet" href="./default.css" type="text/css">
+	</head>
+
+	<body>
+
+		<wicket:extend>
+		
+		<fieldset>
+			<legend>ダミーなユーザ情報設定</legend>
+
+			<br>
+			<table>
+				<tr>
+					<th>ユーザID</th>
+					<td><input type="text" size="10" maxlen="8" wicket:id="userid" /></td>
+				</tr>
+				<tr>
+					<th>経歴参照権限 </th>
+					<td><input type="checkbox"  wicket:id="authrefer" />あり</td>
+				</tr>
+				<tr>
+					<th>メンテナンス権限</th>
+					<td><input type="checkbox"  wicket:id="authmant" />あり</td>
+				</tr>
+				<tr>
+					<th>経歴入力権限</th>
+					<td><input type="checkbox"  wicket:id="authinput" />あり</td>
+				</tr>
+				<tr>
+					<th>帳票出力権限</th>
+					<td><input type="checkbox"  wicket:id="authprint" />あり</td>
+				</tr>
+				
+			</table>
+			
+		</fieldset>
+		<br>
+		<fieldset>
+			<legend>遷移先の画面選択</legend>
+			<br>
+			<select size="6" wicket:id="pageclass">
+				<option>ログイン画面</option>
+				<option>xx画面</option>
+			</select>
+		</fieldset>
+		<br>
+		<input type="submit" value="ログインして遷移" wicket:id="transition" />
+		&nbsp;&nbsp;
+		<input type="submit" value="ログインしないで遷移" wicket:id="transitionnotlogin" />
+
+		</wicket:extend>
+	</body>
+
+</html>
+
+		
